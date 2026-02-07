@@ -1,4 +1,28 @@
 <x-guest-layout>
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
+    <style>
+        .ts-control {
+            border-radius: 0.75rem !important;
+            padding-left: 2.75rem !important;
+            background-color: rgb(249 250 251) !important;
+            border: 1px solid rgb(209 213 219) !important;
+            min-height: 46px;
+            display: flex;
+            align-items: center;
+        }
+
+        .ts-wrapper.focus .ts-control {
+            border-color: #4f46e5 !important;
+            box-shadow: 0 0 0 1px #4f46e5 !important;
+        }
+
+        .ts-dropdown {
+            border-radius: 0.75rem !important;
+            margin-top: 5px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+
     <div class="mb-6">
         <h2 class="text-2xl font-bold text-gray-800">Criar Conta</h2>
         <p class="text-sm text-gray-500">Junte-se à EBD Digital hoje mesmo.</p>
@@ -18,14 +42,14 @@
                     </svg>
                 </div>
                 <input id="name"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 p-3"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block w-full input-with-icon p-3"
                     type="text" name="name" :value="old('name')" required autofocus placeholder="Seu nome" />
             </div>
             <x-input-error :messages="$errors->get('name')" class="mt-2" />
         </div>
 
         <div>
-            <label for="congregacao_id" class="block text-sm font-medium text-gray-700 mb-1">Congregação</label>
+            <label for="congregacao_id" class="block text-sm font-medium text-gray-700 mb-1">Sua Congregação</label>
             <div class="relative">
                 <div class="input-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -34,18 +58,15 @@
                             d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z" />
                     </svg>
                 </div>
-                <select id="congregacao_id" name="congregacao_id" required
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 p-3">
-                    <option value="">Selecione sua congregação</option>
+                <select id="congregacao_id" name="congregacao_id" required class="w-full">
+                    <option value="">Pesquisar congregação...</option>
                     @foreach ($congregacoes as $congregacao)
                         <option value="{{ $congregacao->id }}"
-                            {{ old('congregacao_id') == $congregacao->id ? 'selected' : '' }}>
-                            {{ $congregacao->nome }}
+                            {{ old('congregacao_id') == $congregacao->id ? 'selected' : '' }}>{{ $congregacao->nome }}
                         </option>
                     @endforeach
                 </select>
             </div>
-            <x-input-error :messages="$errors->get('congregacao_id')" class="mt-2" />
         </div>
 
         <div>
@@ -59,10 +80,9 @@
                     </svg>
                 </div>
                 <input id="whatsapp"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 p-3"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block w-full input-with-icon p-3"
                     type="text" name="whatsapp" :value="old('whatsapp')" required placeholder="(00) 00000-0000" />
             </div>
-            <x-input-error :messages="$errors->get('whatsapp')" class="mt-2" />
         </div>
 
         <div>
@@ -76,42 +96,76 @@
                     </svg>
                 </div>
                 <input id="email"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 p-3"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block w-full input-with-icon p-3"
                     type="email" name="email" :value="old('email')" required placeholder="seu@email.com" />
             </div>
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
+            <div class="relative">
                 <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
-                <input id="password"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block w-full p-3"
-                    type="password" name="password" required autocomplete="new-password" placeholder="Senha" />
-                <x-input-error :messages="$errors->get('password')" class="mt-2" />
+                <div class="relative">
+                    <input id="password"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block w-full p-3 pr-10"
+                        type="password" name="password" required placeholder="Senha" />
+                    <button type="button" id="eyePass" onclick="togglePassword('password', 'eyePass')"
+                        class="btn-eye">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </button>
+                </div>
             </div>
-            <div>
-                <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-1">Confirmar
-                    Senha</label>
-                <input id="password_confirmation"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block w-full p-3"
-                    type="password" name="password_confirmation" required placeholder="Repita a senha" />
+            <div class="relative">
+                <label for="password_confirmation"
+                    class="block text-sm font-medium text-gray-700 mb-1">Confirmar</label>
+                <div class="relative">
+                    <input id="password_confirmation"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block w-full p-3 pr-10"
+                        type="password" name="password_confirmation" required placeholder="Repita" />
+                    <button type="button" id="eyeConf"
+                        onclick="togglePassword('password_confirmation', 'eyeConf')" class="btn-eye">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                            stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </button>
+                </div>
             </div>
         </div>
 
-        <div class="pt-2">
-            <button type="submit"
-                class="w-full text-white bg-indigo-600 hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-300 font-medium rounded-xl text-sm px-5 py-3.5 text-center shadow-lg shadow-indigo-500/30 transition-all transform active:scale-95">
-                Cadastrar
-            </button>
-        </div>
+        <button type="submit"
+            class="w-full text-white bg-indigo-600 hover:bg-indigo-700 font-medium rounded-xl text-sm px-5 py-3.5 shadow-lg active:scale-95 transition-all">
+            Finalizar Cadastro
+        </button>
     </form>
 
     <div class="mt-6 pt-6 border-t border-gray-100 text-center">
         <p class="text-sm text-gray-500">Já possui cadastro?</p>
-        <a href="{{ route('login') }}"
-            class="mt-2 inline-block text-sm font-bold text-indigo-600 hover:text-indigo-800 transition-colors">
-            Faça Login
-        </a>
+        <a href="{{ route('login') }}" class="mt-2 inline-block text-sm font-bold text-indigo-600">Faça Login</a>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            new TomSelect("#congregacao_id", {
+                create: false,
+                placeholder: "Pesquisar congregação...",
+                allowEmptyOption: true,
+            });
+
+            const whatsappInput = document.getElementById('whatsapp');
+            whatsappInput.addEventListener('input', function(e) {
+                let x = e.target.value.replace(/\D/g, '').match(/(\d{0,2})(\d{0,5})(\d{0,4})/);
+                e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+            });
+        });
+    </script>
 </x-guest-layout>
