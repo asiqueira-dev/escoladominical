@@ -18,10 +18,51 @@
                     </svg>
                 </div>
                 <input id="name"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 p-3 input-with-icon"
-                    type="text" name="name" :value="old('name')" required autofocus autocomplete="name"
-                    placeholder="Seu nome" />
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 p-3"
+                    type="text" name="name" :value="old('name')" required autofocus placeholder="Seu nome" />
             </div>
+            <x-input-error :messages="$errors->get('name')" class="mt-2" />
+        </div>
+
+        <div>
+            <label for="congregacao_id" class="block text-sm font-medium text-gray-700 mb-1">Congregação</label>
+            <div class="relative">
+                <div class="input-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z" />
+                    </svg>
+                </div>
+                <select id="congregacao_id" name="congregacao_id" required
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 p-3">
+                    <option value="">Selecione sua congregação</option>
+                    @foreach ($congregacoes as $congregacao)
+                        <option value="{{ $congregacao->id }}"
+                            {{ old('congregacao_id') == $congregacao->id ? 'selected' : '' }}>
+                            {{ $congregacao->nome }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <x-input-error :messages="$errors->get('congregacao_id')" class="mt-2" />
+        </div>
+
+        <div>
+            <label for="whatsapp" class="block text-sm font-medium text-gray-700 mb-1">WhatsApp</label>
+            <div class="relative">
+                <div class="input-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+                    </svg>
+                </div>
+                <input id="whatsapp"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 p-3"
+                    type="text" name="whatsapp" :value="old('whatsapp')" required placeholder="(00) 00000-0000" />
+            </div>
+            <x-input-error :messages="$errors->get('whatsapp')" class="mt-2" />
         </div>
 
         <div>
@@ -35,44 +76,26 @@
                     </svg>
                 </div>
                 <input id="email"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 p-3 input-with-icon"
-                    type="email" name="email" :value="old('email')" required autocomplete="username"
-                    placeholder="seu@email.com" />
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 p-3"
+                    type="email" name="email" :value="old('email')" required placeholder="seu@email.com" />
             </div>
+            <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
-        <div>
-            <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
-            <div class="relative">
-                <div class="input-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor" class="w-5 h-5">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-                    </svg>
-                </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
                 <input id="password"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 p-3 input-with-icon"
-                    type="password" name="password" required autocomplete="new-password"
-                    placeholder="Mínimo 8 caracteres" />
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block w-full p-3"
+                    type="password" name="password" required autocomplete="new-password" placeholder="Senha" />
+                <x-input-error :messages="$errors->get('password')" class="mt-2" />
             </div>
-        </div>
-
-        <div>
-            <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-1">Confirmar
-                Senha</label>
-            <div class="relative">
-                <div class="input-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor" class="w-5 h-5">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                </div>
+            <div>
+                <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-1">Confirmar
+                    Senha</label>
                 <input id="password_confirmation"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 p-3 input-with-icon"
-                    type="password" name="password_confirmation" required autocomplete="new-password"
-                    placeholder="Repita a senha" />
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block w-full p-3"
+                    type="password" name="password_confirmation" required placeholder="Repita a senha" />
             </div>
         </div>
 
