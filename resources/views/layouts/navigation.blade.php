@@ -48,8 +48,9 @@
         <div class="flex items-center p-3 rounded-2xl bg-slate-800/40 border border-slate-700/50 shadow-inner">
             <div class="shrink-0 relative">
                 <img class="w-10 h-10 rounded-xl object-cover ring-2 ring-indigo-500/20"
-                    src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=6366f1&color=fff"
-                    alt="">
+                    src="{{ Auth::user()->avatar ? asset(Auth::user()->avatar) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=6366f1&color=fff' }}"
+                    alt="{{ Auth::user()->name }}">
+
                 <div
                     class="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-emerald-500 border-2 border-[#161e2e] rounded-full">
                 </div>

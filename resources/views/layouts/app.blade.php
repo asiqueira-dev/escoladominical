@@ -63,9 +63,10 @@
                         <button @click="open = !open" class="flex items-center group focus:outline-none">
                             <div
                                 class="flex items-center space-x-3 p-1 pr-3 rounded-full hover:bg-slate-100 transition-all">
-                                <img class="w-9 h-9 rounded-full ring-2 ring-white border border-slate-200 shadow-sm"
-                                    src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=6366f1&color=fff&bold=true"
+                                <img class="w-9 h-9 rounded-full ring-2 ring-white border border-slate-200 shadow-sm object-cover"
+                                    src="{{ Auth::user()->avatar ? asset(Auth::user()->avatar) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=6366f1&color=fff&bold=true' }}"
                                     alt="{{ Auth::user()->name }}">
+
                                 <span
                                     class="hidden md:block text-sm font-semibold text-slate-700 group-hover:text-indigo-600 transition-colors">
                                     {{ Auth::user()->name }}
