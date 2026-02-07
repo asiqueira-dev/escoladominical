@@ -21,8 +21,9 @@
     </div>
 
     <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto no-scrollbar">
+        {{-- Link dinâmico que funciona para os 3 tipos de dashboard --}}
         <a href="{{ route('dashboard') }}"
-            class="flex items-center px-4 py-3.5 text-sm font-semibold rounded-2xl transition-all duration-200 {{ request()->routeIs('dashboard') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' : 'text-slate-400 hover:bg-slate-800/50 hover:text-white' }}">
+            class="flex items-center px-4 py-3.5 text-sm font-semibold rounded-2xl transition-all duration-200 {{ request()->routeIs('*.dashboard') || request()->routeIs('dashboard') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' : 'text-slate-400 hover:bg-slate-800/50 hover:text-white' }}">
             <svg class="w-5 h-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path
                     d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -51,8 +52,6 @@
             </div>
             <div class="ml-3 min-w-0 flex-1">
                 <p class="text-sm font-bold text-white truncate leading-none mb-1">{{ Auth::user()->name }}</p>
-
-                {{-- TIPO DE USUÁRIO --}}
                 @if (Auth::user()->isSuperAdmin())
                     <span class="text-[10px] uppercase tracking-wider font-extrabold text-indigo-400">Super Admin</span>
                 @elseif(Auth::user()->isAdmin())
