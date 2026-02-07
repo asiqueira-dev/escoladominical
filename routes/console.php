@@ -3,13 +3,21 @@
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
+use Illuminate\Support\Facades\Log;
 
-// Executa as migrações automaticamente todos os dias às 00:00
-// O uso do --force é obrigatório em ambiente de produção
-Schedule::command('migrate --force')->daily();
-
-// Exemplo de como você poderá automatizar o CRM ou sistema de tickets no futuro:
-// Schedule::command('emails:limpar-suspisciosos')->everySixHours();
+// Agendador: Tenta rodar a cada minuto de forma independente
+Schedule::call(function () {
+    try {
+        Log::info('Cron Job: Iniciando tentativa de migrate automática.');
+        
+        Artisan::call('migrate', ['--force' => true]);
+        
+        $output = Artisan::output();
+        Log::info('Cron Job: Migrate finalizada com sucesso.', ['output' => $output]);
+    } catch (\Exception $e) {
+        Log::error('Cron Job: Erro ao executar migrate.', ['error' => $e->getMessage()]);
+    }
+})->everyMinute();
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
