@@ -28,14 +28,13 @@
             scrollbar-width: none;
         }
 
-        /* Efeito de profundidade para os cards */
         .card-shadow {
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
         }
     </style>
 </head>
 
-<body class="font-sans antialiased bg-[#f8fafc] text-slate-900" x-data="{ sidebarOpen: false }">
+<body class="font-sans antialiased bg-[#f8fafc] text-slate-900" x-data="{ sidebarOpen: false, logoutModal: false }">
 
     <div class="flex h-screen overflow-hidden">
         @include('layouts.navigation')
@@ -114,19 +113,16 @@
                             </div>
 
                             <div class="p-2 border-t border-slate-100">
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <button type="submit"
-                                        class="flex items-center w-full px-4 py-2.5 text-sm text-red-500 rounded-xl hover:bg-red-50 transition-colors">
-                                        <svg class="w-4 h-4 mr-3 opacity-70" fill="none" viewBox="0 0 24 24"
-                                            stroke="currentColor">
-                                            <path
-                                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                                                stroke-width="2" />
-                                        </svg>
-                                        Sair do Sistema
-                                    </button>
-                                </form>
+                                <button @click="open = false; logoutModal = true"
+                                    class="flex items-center w-full px-4 py-2.5 text-sm text-red-500 rounded-xl hover:bg-red-50 transition-colors">
+                                    <svg class="w-4 h-4 mr-3 opacity-70" fill="none" viewBox="0 0 24 24"
+                                        stroke="currentColor">
+                                        <path
+                                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                                            stroke-width="2" />
+                                    </svg>
+                                    Sair do Sistema
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -138,6 +134,59 @@
                     {{ $slot }}
                 </div>
             </main>
+        </div>
+    </div>
+
+    <div x-show="logoutModal" class="fixed inset-0 z-[100] overflow-y-auto" x-cloak>
+        <div x-show="logoutModal" x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
+
+        <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+            <div x-show="logoutModal" x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                x-transition:leave="transition ease-in duration-200"
+                x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                @click.away="logoutModal = false"
+                class="relative transform overflow-hidden rounded-[2rem] bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg border border-slate-100">
+
+                <div class="bg-white px-6 pb-6 pt-8 sm:p-10 sm:pb-8">
+                    <div class="sm:flex sm:items-start">
+                        <div
+                            class="mx-auto flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-red-50 sm:mx-0">
+                            <svg class="h-7 w-7 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+                            </svg>
+                        </div>
+                        <div class="mt-4 text-center sm:ml-6 sm:mt-0 sm:text-left">
+                            <h3 class="text-xl font-extrabold text-slate-900 tracking-tight leading-6">Sair da conta?
+                            </h3>
+                            <div class="mt-3">
+                                <p class="text-sm font-medium text-slate-500 leading-relaxed">Você está prestes a
+                                    encerrar sua sessão. Alguma alteração não salva pode ser perdida. Tem certeza que
+                                    deseja sair agora?</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50/50 px-6 py-6 sm:flex sm:flex-row-reverse sm:px-10 gap-3">
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit"
+                            class="inline-flex w-full justify-center rounded-xl bg-red-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-red-600/20 hover:bg-red-700 transition-all active:scale-95 sm:w-auto">Confirmar
+                            Saída</button>
+                    </form>
+                    <button type="button" @click="logoutModal = false"
+                        class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-6 py-3 text-sm font-bold text-slate-700 border border-slate-200 shadow-sm hover:bg-slate-50 transition-all sm:mt-0 sm:w-auto">Continuar
+                        Logado</button>
+                </div>
+            </div>
         </div>
     </div>
 </body>
