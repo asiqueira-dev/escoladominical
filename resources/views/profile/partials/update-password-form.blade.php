@@ -1,47 +1,66 @@
 <section>
     <header>
-        <h2 class="text-lg font-medium text-gray-900">
-            {{ __('Update Password') }}
+        <h2 class="text-lg font-bold text-gray-900">
+            {{ __('Informações do Perfil') }}
         </h2>
 
         <p class="mt-1 text-sm text-gray-600">
-            {{ __('Ensure your account is using a long, random password to stay secure.') }}
+            {{ __('Atualize as informações do seu perfil e endereço de e-mail.') }}
         </p>
     </header>
 
-    <form method="post" action="{{ route('password.update') }}" class="mt-6 space-y-6">
+    <form id="send-verification" method="post" action="{{ route('verification.send') }}">
         @csrf
-        @method('put')
+    </form>
+
+    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
+        @csrf
+        @method('patch')
 
         <div>
-            <x-input-label for="update_password_current_password" :value="__('Current Password')" />
-            <x-text-input id="update_password_current_password" name="current_password" type="password" class="mt-1 block w-full" autocomplete="current-password" />
-            <x-input-error :messages="$errors->updatePassword->get('current_password')" class="mt-2" />
+            <x-input-label for="name" :value="__('Nome')" class="mb-1" />
+            <x-text-input id="name" name="name" type="text"
+                class="mt-1 block w-full rounded-xl border-gray-300 py-3 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                :value="old('name', $user->name)" required autofocus autocomplete="name" />
+            <x-input-error class="mt-2" :messages="$errors->get('name')" />
         </div>
 
         <div>
-            <x-input-label for="update_password_password" :value="__('New Password')" />
-            <x-text-input id="update_password_password" name="password" type="password" class="mt-1 block w-full" autocomplete="new-password" />
-            <x-input-error :messages="$errors->updatePassword->get('password')" class="mt-2" />
-        </div>
+            <x-input-label for="email" :value="__('E-mail')" class="mb-1" />
+            <x-text-input id="email" name="email" type="email"
+                class="mt-1 block w-full rounded-xl border-gray-300 py-3 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                :value="old('email', $user->email)" required autocomplete="username" />
+            <x-input-error class="mt-2" :messages="$errors->get('email')" />
 
-        <div>
-            <x-input-label for="update_password_password_confirmation" :value="__('Confirm Password')" />
-            <x-text-input id="update_password_password_confirmation" name="password_confirmation" type="password" class="mt-1 block w-full" autocomplete="new-password" />
-            <x-input-error :messages="$errors->updatePassword->get('password_confirmation')" class="mt-2" />
+            @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && !$user->hasVerifiedEmail())
+                <div class="mt-2">
+                    <p class="text-sm text-gray-800">
+                        {{ __('Seu e-mail não foi verificado.') }}
+
+                        <button form="send-verification"
+                            class="underline text-sm text-indigo-600 hover:text-indigo-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            {{ __('Clique aqui para reenviar o e-mail de verificação.') }}
+                        </button>
+                    </p>
+
+                    @if (session('status') === 'verification-link-sent')
+                        <p class="mt-2 font-medium text-sm text-green-600">
+                            {{ __('Um novo link de verificação foi enviado para o seu e-mail.') }}
+                        </p>
+                    @endif
+                </div>
+            @endif
         </div>
 
         <div class="flex items-center gap-4">
-            <x-primary-button>{{ __('Save') }}</x-primary-button>
+            <x-primary-button
+                class="bg-indigo-600 hover:bg-indigo-700 py-3 px-6 rounded-xl shadow-lg shadow-indigo-500/30">
+                {{ __('Salvar Alterações') }}
+            </x-primary-button>
 
-            @if (session('status') === 'password-updated')
-                <p
-                    x-data="{ show: true }"
-                    x-show="show"
-                    x-transition
-                    x-init="setTimeout(() => show = false, 2000)"
-                    class="text-sm text-gray-600"
-                >{{ __('Saved.') }}</p>
+            @if (session('status') === 'profile-updated')
+                <p x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 2000)"
+                    class="text-sm text-green-600 font-medium">{{ __('Salvo com sucesso.') }}</p>
             @endif
         </div>
     </form>
