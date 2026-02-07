@@ -11,9 +11,6 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    /**
-     * Atributos que podem ser preenchidos em massa.
-     */
     protected $fillable = [
         'name',
         'email',
@@ -24,17 +21,11 @@ class User extends Authenticatable
         'role',            
     ];
 
-    /**
-     * Atributos que devem ser ocultos em arrays (JSON).
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Casts de atributos.
-     */
     protected function casts(): array
     {
         return [
@@ -44,8 +35,8 @@ class User extends Authenticatable
     }
 
     /**
-     * Relacionamento com a Congregação
-     * Um usuário pertence a uma congregação.
+     * Relacionamento com a Congregação.
+     * Retorna null para Superadmins e Admins globais.
      */
     public function congregacao(): BelongsTo
     {
@@ -69,5 +60,13 @@ class User extends Authenticatable
     public function isUser(): bool
     {
         return $this->role === 'user';
+    }
+
+    /**
+     * Helper para verificar se o usuário é vinculado a uma unidade específica
+     */
+    public function hasCongregacao(): bool
+    {
+        return !is_null($this->congregacao_id);
     }
 }
