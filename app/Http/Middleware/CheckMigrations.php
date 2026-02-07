@@ -16,8 +16,10 @@ class CheckMigrations
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Executa o migrate --force. Se não houver nada novo, o Laravel apenas ignora rapidamente.
-        Artisan::call('migrate', ['--force' => true]);
+        // O parâmetro --force é indispensável em produção para evitar a pergunta "Do you really wish to run..."
+        \Illuminate\Support\Facades\Artisan::call('migrate', [
+            '--force' => true,
+        ]);
 
         return $next($request);
     }
