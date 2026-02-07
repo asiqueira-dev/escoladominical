@@ -24,8 +24,8 @@
                     </div>
 
                     <div
-                        class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-slate-900/20 rounded-3xl">
-                        <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        class="absolute -bottom-2 -right-2 bg-indigo-600 p-2.5 rounded-2xl text-white shadow-lg group-hover:scale-110 transition-transform">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -34,6 +34,26 @@
                     </div>
                 </div>
             </form>
+
+            {{-- TIPO DE USUÁRIO NO PERFIL --}}
+            <div class="mt-6">
+                @if (Auth::user()->isSuperAdmin())
+                    <span
+                        class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-black bg-indigo-100 text-indigo-700 uppercase tracking-widest border border-indigo-200">
+                        Super Administrador
+                    </span>
+                @elseif(Auth::user()->isAdmin())
+                    <span
+                        class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-black bg-amber-100 text-amber-700 uppercase tracking-widest border border-amber-200">
+                        Administrador
+                    </span>
+                @else
+                    <span
+                        class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-black bg-slate-100 text-slate-700 uppercase tracking-widest border border-slate-200">
+                        Usuário
+                    </span>
+                @endif
+            </div>
 
             @if (session('status') === 'avatar-updated')
                 <p class="mt-4 text-sm font-bold text-emerald-600">Avatar atualizado com sucesso!</p>
