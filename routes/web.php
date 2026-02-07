@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+
 use App\Http\Controllers\SuperAdmin\DashboardController as SuperAdminDash;
+use App\Http\Controllers\SuperAdmin\AdminUserController;
 use App\Http\Controllers\Admin\DashboardController as AdminDash;
 use App\Http\Controllers\User\DashboardController as UserDash;
 
@@ -12,7 +14,7 @@ Route::get('/', function () {
 
 /**
  * Redirecionador Inteligente
- * Ao aceder a /dashboard, o sistema verifica o nível do utilizador e envia-o para a rota correta.
+ * O middleware 'verified' impede o acesso se o e-mail não estiver confirmado.
  */
 Route::get('/dashboard', function () {
     $user = auth()->user();
@@ -28,20 +30,27 @@ Route::get('/dashboard', function () {
     return redirect()->route('user.dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+/**
+ * Grupo de rotas protegidas por Autenticação e Verificação de E-mail
+ */
 Route::middleware(['auth', 'verified'])->group(function () {
     
     /**
-     * Rotas exclusivas de Super Administrador
+     * Rotas Super Administrador
      */
     Route::prefix('superadmin')
         ->name('superadmin.')
         ->middleware('superadmin')
         ->group(function () {
             Route::get('/dashboard', [SuperAdminDash::class, 'index'])->name('dashboard');
+
+            Route::get('/admins', [AdminUserController::class, 'index'])->name('admins.index');
+            Route::get('/admins/create', [AdminUserController::class, 'create'])->name('admins.create');
+            Route::post('/admins', [AdminUserController::class, 'store'])->name('admins.store');
         });
 
     /**
-     * Rotas exclusivas de Administrador
+     * Rotas Administrador
      */
     Route::prefix('admin')
         ->name('admin.')
@@ -51,7 +60,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         });
 
     /**
-     * Rotas exclusivas de Usuário
+     * Rotas Usuário Comum
      */
     Route::prefix('user')
         ->name('user.')
@@ -61,7 +70,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         });
 
     /**
-     * Perfil do Utilizador (Acessível a todos os níveis)
+     * Perfil (Acessível a todos os níveis, desde que verificados)
      */
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -69,4 +78,5 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar');
 });
 
+// Importa as rotas de autenticação (login, register, forgot-password, etc.)
 require __DIR__.'/auth.php';

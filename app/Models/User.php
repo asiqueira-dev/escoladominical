@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasFactory, Notifiable;
 
@@ -15,10 +16,10 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'avatar',          
-        'whatsapp',        
-        'congregacao_id',  
-        'role',            
+        'avatar',
+        'whatsapp',
+        'congregacao_id',
+        'role',
     ];
 
     protected $hidden = [
@@ -34,39 +35,12 @@ class User extends Authenticatable
         ];
     }
 
-    /**
-     * Relacionamento com a Congregação.
-     * Retorna null para Superadmins e Admins globais.
-     */
     public function congregacao(): BelongsTo
     {
         return $this->belongsTo(Congregacao::class, 'congregacao_id');
     }
 
-    /**
-     * Verificadores de Nível de Acesso (Roles)
-     */
-    
-    public function isSuperAdmin(): bool
-    {
-        return $this->role === 'superadmin';
-    }
-
-    public function isAdmin(): bool
-    {
-        return $this->role === 'admin';
-    }
-
-    public function isUser(): bool
-    {
-        return $this->role === 'user';
-    }
-
-    /**
-     * Helper para verificar se o usuário é vinculado a uma unidade específica
-     */
-    public function hasCongregacao(): bool
-    {
-        return !is_null($this->congregacao_id);
-    }
+    public function isSuperAdmin(): bool { return $this->role === 'superadmin'; }
+    public function isAdmin(): bool { return $this->role === 'admin'; }
+    public function isUser(): bool { return $this->role === 'user'; }
 }
