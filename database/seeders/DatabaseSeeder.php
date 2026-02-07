@@ -11,9 +11,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Executa o seeder das congregações
         $this->call([
-            CongregacaoSeeder::class,
+            CongregacaoSeeder::class, 
+            UserSeeder::class,         
         ]);        
     }
 }

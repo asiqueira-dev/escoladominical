@@ -7,12 +7,18 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     public function up(): void
-    {
-        Schema::table('users', function (Blueprint $table) {
-            $table->foreignId('congregacao_id')->after('id')->constrained('congregacoes');
-            $table->string('whatsapp')->after('email');
-        });
-    }
+{
+    Schema::table('users', function (Blueprint $table) {
+        // Adicionamos nullable() antes de constrained()
+        $table->foreignId('congregacao_id')
+              ->nullable() 
+              ->after('id')
+              ->constrained('congregacoes')
+              ->nullOnDelete(); // Opcional: define null se a congregação for deletada
+              
+        $table->string('whatsapp')->after('email');
+    });
+}
 
     public function down(): void
     {
