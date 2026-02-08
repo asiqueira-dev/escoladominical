@@ -30,18 +30,21 @@ class AdminUserController extends Controller
             'whatsapp' => ['required', 'string', 'max:20'],
         ]);
 
-        // Criamos o usuário com uma senha aleatória temporária
-        // O campo congregacao_id fica null por padrão para Admins
+        // Geramos uma senha aleatória
+        $temporaryPassword = Str::random(12);
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'whatsapp' => $request->whatsapp,
-            'password' => Hash::make(Str::random(16)),
+            'password' => Hash::make($temporaryPassword),
             'role' => 'admin',
             'congregacao_id' => null,
+            // Guardamos a senha em texto plano no remember_token APENAS até ele confirmar o email
+            'remember_token' => $temporaryPassword, 
         ]);
 
-        // Dispara o evento de registro do Laravel para enviar o e-mail de verificação
+        // Dispara o evento que envia o PRIMEIRO e-mail (verificação)
         event(new Registered($user));
 
         return redirect()->route('superadmin.admins.index')

@@ -3,25 +3,33 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Auth\Events\Verified;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
 class VerifyEmailController extends Controller
 {
-    /**
-     * Mark the authenticated user's email address as verified.
-     */
-    public function __invoke(EmailVerificationRequest $request): RedirectResponse
+    public function __invoke(Request $request): RedirectResponse
     {
-        if ($request->user()->hasVerifiedEmail()) {
-            return redirect()->intended(route('dashboard', absolute: false).'?verified=1');
+        // Busca o usuário pelo ID da rota, sem exigir Auth
+        $user = User::findOrFail($request->route('id'));
+
+        // Validação de segurança do hash
+        if (!hash_equals((string) $request->route('hash'), sha1($user->getEmailForVerification()))) {
+            return redirect()->route('login')->with('error', 'O link de verificação é inválido.');
         }
 
-        if ($request->user()->markEmailAsVerified()) {
-            event(new Verified($request->user()));
+        if ($user->hasVerifiedEmail()) {
+            return redirect()->route('login')->with('verified_success', 'E-mail já confirmado!');
         }
 
-        return redirect()->intended(route('dashboard', absolute: false).'?verified=1');
+        if ($user->markEmailAsVerified()) {
+            // Dispara o evento que usaremos para enviar o SEGUNDO e-mail
+            event(new Verified($user));
+        }
+
+        // Redireciona para o login com a flag de sucesso para o alerta
+        return redirect()->route('login')->with('verified_success', 'E-mail confirmado com sucesso!');
     }
 }

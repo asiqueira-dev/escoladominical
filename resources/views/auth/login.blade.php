@@ -1,4 +1,32 @@
 <x-guest-layout>
+    @if (session('verified_success'))
+        <div id="alert-verified" class="fixed top-5 right-5 z-50 transform transition-all duration-500">
+            <div class="bg-green-600 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div>
+                    <p class="font-bold">Sucesso!</p>
+                    <p class="text-xs text-green-100">Seu e-mail foi verificado. Dados de acesso enviados por e-mail.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            setTimeout(function() {
+                const alert = document.getElementById('alert-verified');
+                if (alert) {
+                    alert.style.opacity = '0';
+                    alert.style.transform = 'translateY(-20px)';
+                    setTimeout(() => alert.remove(), 500);
+                }
+            }, 5000);
+        </script>
+    @endif
+
     <div class="mb-6">
         <h2 class="text-2xl font-bold text-gray-800">Bem-vindo(a)</h2>
         <p class="text-sm text-gray-500">Insira suas credenciais para acessar.</p>
@@ -19,9 +47,10 @@
                 </div>
                 <input id="email"
                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block w-full input-with-icon p-3 transition-all"
-                    type="email" name="email" :value="old('email')" required autofocus
+                    type="email" name="email" value="{{ old('email') }}" required autofocus
                     placeholder="seu@email.com" />
             </div>
+            <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
         <div>
@@ -53,6 +82,7 @@
                     </svg>
                 </button>
             </div>
+            <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
         <div class="block">
