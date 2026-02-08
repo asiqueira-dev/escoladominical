@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Models;
-
+use App\Notifications\VerifyEmailCustom;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -43,4 +43,9 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isSuperAdmin(): bool { return $this->role === 'superadmin'; }
     public function isAdmin(): bool { return $this->role === 'admin'; }
     public function isUser(): bool { return $this->role === 'user'; }
+
+    public function sendEmailVerificationNotification()
+    {
+        $this->notify(new VerifyEmailCustom);
+    }
 }
