@@ -5,27 +5,31 @@ namespace App\Listeners;
 use App\Mail\AdminAccessDataMail;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class SendAdminAccessData
 {
-    /**
-     * Handle the event.
-     */
     public function handle(Verified $event): void
     {
         $user = $event->user;
 
-        // Só envia se for do tipo 'admin' e tiver uma senha temporária no remember_token
+        // Log para depuração (pode remover depois de testar)
+        Log::info("Evento de verificação detectado para: " . $user->email);
+
         if ($user->role === 'admin' && !empty($user->remember_token)) {
             $password = $user->remember_token;
 
-            // Envia o segundo e-mail
-            Mail::to($user->email)->send(new AdminAccessDataMail($user, $password));
+            try {
+                Mail::to($user->email)->send(new AdminAccessDataMail($user, $password));
+                
+                Log::info("Email de dados de acesso enviado para: " . $user->email);
 
-            // Limpa o remember_token por segurança
-            $user->forceFill([
-                'remember_token' => null,
-            ])->save();
+                $user->forceFill([
+                    'remember_token' => null,
+                ])->save();
+            } catch (\Exception $e) {
+                Log::error("Erro ao enviar email de acesso: " . $e->getMessage());
+            }
         }
     }
 }

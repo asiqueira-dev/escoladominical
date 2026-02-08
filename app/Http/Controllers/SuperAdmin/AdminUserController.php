@@ -30,7 +30,6 @@ class AdminUserController extends Controller
             'whatsapp' => ['required', 'string', 'max:20'],
         ]);
 
-        // Geramos uma senha aleatória
         $temporaryPassword = Str::random(12);
 
         $user = User::create([
@@ -40,11 +39,13 @@ class AdminUserController extends Controller
             'password' => Hash::make($temporaryPassword),
             'role' => 'admin',
             'congregacao_id' => null,
-            // Guardamos a senha em texto plano no remember_token APENAS até ele confirmar o email
-            'remember_token' => $temporaryPassword, 
         ]);
 
-        // Dispara o evento que envia o PRIMEIRO e-mail (verificação)
+        // Usamos forceFill para garantir que a senha temporária seja gravada no banco
+        $user->forceFill([
+            'remember_token' => $temporaryPassword,
+        ])->save();
+
         event(new Registered($user));
 
         return redirect()->route('superadmin.admins.index')
