@@ -3,18 +3,27 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
+// Importação dos Controllers de Dashboard e Autenticação
 use App\Http\Controllers\SuperAdmin\DashboardController as SuperAdminDash;
 use App\Http\Controllers\SuperAdmin\AdminUserController;
 use App\Http\Controllers\Admin\DashboardController as AdminDash;
 use App\Http\Controllers\User\DashboardController as UserDash;
+use App\Http\Controllers\Auth\VerifyEmailController; 
 
 Route::get('/', function () {
     return redirect()->route('login');
 });
 
 /**
+ * ROTA DE VERIFICAÇÃO DE E-MAIL (CORREÇÃO PRINCIPAL)
+ * Esta rota captura o link enviado por e-mail.
+ */
+Route::get('/verify-email/{id}/{hash}', VerifyEmailController::class)
+    ->middleware(['signed', 'throttle:6,1'])
+    ->name('verification.verify');
+
+/**
  * Redirecionador Inteligente
- * O middleware 'verified' impede o acesso se o e-mail não estiver confirmado.
  */
 Route::get('/dashboard', function () {
     $user = auth()->user();
@@ -70,7 +79,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         });
 
     /**
-     * Perfil (Acessível a todos os níveis, desde que verificados)
+     * Perfil
      */
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -78,5 +87,5 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar');
 });
 
-// Importa as rotas de autenticação (login, register, forgot-password, etc.)
+// Importa as rotas de autenticação
 require __DIR__.'/auth.php';
